@@ -270,3 +270,98 @@ window.addEventListener('beforeunload', (event) => {
   }
 });
 
+// Wisp Server Switcher Logic
+const wispServers = [
+  { name: "Mercury", url: "wss://wisp.mercury.cf/", reliability: "Very High", info: "Fastest for most users. Low latency and reliable." },
+  { name: "Pydust", url: "wss://wisp.pydust.cloud/", reliability: "High", info: "Less known, great fallback for speed." },
+  { name: "Delusionz", url: "wss://wisp.delusionz.me/", reliability: "High", info: "Stable and consistent uptime." },
+  { name: "Toms", url: "wss://wisp.toms.work/", reliability: "Medium", info: "Maintained by the community." },
+  { name: "RHW", url: "wss://wisp.rhw.one/", reliability: "High", info: "The classic public Wisp server." }
+];
+
+async function pingWisp(url) {
+  const start = Date.now();
+  try {
+    const socket = new WebSocket(url);
+    return new Promise((resolve) => {
+      const timeout = setTimeout(() => {
+        socket.close();
+        resolve(9999);
+      }, 3000);
+
+      socket.onopen = () => {
+        const latency = Date.now() - start;
+        socket.close();
+        clearTimeout(timeout);
+        resolve(latency);
+      };
+      socket.onerror = () => {
+        resolve(9999);
+      };
+    });
+  } catch (e) {
+    return 9999;
+  }
+}
+
+function getLatencyClass(ms) {
+  if (ms < 150) return "green";
+  if (ms < 400) return "yellow";
+  return "red";
+}
+
+async function renderWispList() {
+  const list = document.getElementById("wisp-list");
+  if (!list) return;
+  list.innerHTML = "";
+
+  const currentWisp = localStorage.getItem("wispUrl") || "wss://wisp.mercury.cf/";
+
+  for (const server of wispServers) {
+    const latency = await pingWisp(server.url);
+    const latencyClass = getLatencyClass(latency);
+    
+    const item = document.createElement("div");
+    item.className = `wisp-item ${currentWisp === server.url ? 'active' : ''}`;
+    item.innerHTML = `
+      <div class="wisp-name">${server.name}</div>
+      <div class="wisp-status">
+        <span class="latency-text">${latency === 9999 ? 'Offline' : latency + 'ms'}</span>
+        <div class="latency-dot ${latencyClass}"></div>
+      </div>
+      <div class="info-popup">
+        <p>${server.info}</p>
+        <p class="reliability">Reliability: ${server.reliability}</p>
+      </div>
+    `;
+
+    item.onclick = () => {
+      localStorage.setItem("wispUrl", server.url);
+      localStorage.setItem("wispChanged", "true");
+      window.location.reload();
+    };
+
+    list.appendChild(item);
+  }
+}
+
+const wispInput = document.getElementById("wisp-input");
+const wispSave = document.getElementById("wisp-save");
+
+if (wispSave) {
+  wispSave.onclick = () => {
+    let url = wispInput.value.trim();
+    if (!url.startsWith("wss://") && !url.startsWith("ws://")) {
+      alert("Invalid Wisp URL! Must start with wss:// or ws://");
+      return;
+    }
+    localStorage.setItem("wispUrl", url);
+    localStorage.setItem("wispChanged", "true");
+    window.location.reload();
+  };
+}
+
+// Initial render
+setTimeout(renderWispList, 500);
+
+

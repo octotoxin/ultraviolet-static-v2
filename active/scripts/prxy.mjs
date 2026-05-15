@@ -27,10 +27,12 @@ export async function getUV(input) {
     throw err;
   }
 
-  let url = search(input, "https://html.duckduckgo.com/html?t=h_&q=%s");
+  let url = search(input, "https://lite.duckduckgo.com/lite/?q=%s");
 
-  let wispUrl = "wss://wisp.rhw.one/";
-  if ((await connection.getTransport()) !== base + "/active/prxy/epoxy/index.mjs") {
+  let wispUrl = localStorage.getItem("wispUrl") || "wss://wisp.mercury.cf/";
+  
+  if ((await connection.getTransport()) !== base + "/active/prxy/epoxy/index.mjs" || localStorage.getItem("wispChanged")) {
+    localStorage.removeItem("wispChanged");
     await connection.setTransport(base + "/active/prxy/epoxy/index.mjs", [
       { wisp: wispUrl },
     ]);
