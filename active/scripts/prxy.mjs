@@ -29,19 +29,15 @@ export async function getUV(input) {
 
   let url = search(input, "https://lite.duckduckgo.com/lite/?q=%s");
 
-  let wispUrl = localStorage.getItem("wispUrl") || "wss://wisp.mercury.cf/";
+  let wispUrl = localStorage.getItem("wispUrl") || "wss://wisp.rhw.one/";
   
-  if ((await connection.getTransport()) !== base + "/active/prxy/epoxy/index.mjs" || localStorage.getItem("wispChanged")) {
+  const currentTransport = await connection.getTransport();
+  if (localStorage.getItem("wispChanged") || !currentTransport.includes("epoxy")) {
     localStorage.removeItem("wispChanged");
-    await connection.setTransport(base + "/active/prxy/epoxy/index.mjs", [
-      { wisp: wispUrl },
-    ]);
+    console.log("Setting Wisp Transport to:", wispUrl);
+    await connection.setTransport(base + "/active/prxy/epoxy/index.mjs", [{ wisp: wispUrl }]);
   }
-  if ((await connection.getTransport()) !== base + "/active/prxy/libcurl/libcurl.mjs") {
-    await connection.setTransport(base + "/active/prxy/libcurl/libcurl.mjs", [
-      { wisp: wispUrl },
-    ]);
-  }
+
 
   let viewUrl = __uv$config.prefix + __uv$config.encodeUrl(url);
 

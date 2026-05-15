@@ -315,7 +315,7 @@ async function renderWispList() {
   if (!list) return;
   list.innerHTML = "";
 
-  const currentWisp = localStorage.getItem("wispUrl") || "wss://wisp.mercury.cf/";
+  const currentWisp = localStorage.getItem("wispUrl") || "wss://wisp.rhw.one/";
 
   for (const server of wispServers) {
     const latency = await pingWisp(server.url);
