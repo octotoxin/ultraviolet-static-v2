@@ -261,3 +261,12 @@ if (urlParams.has("inject")) {
     focusTab()
   }, 100);
 }
+
+// Prevent accidental tab closure
+window.addEventListener('beforeunload', (event) => {
+  if (tabs.length > 0) {
+    event.preventDefault();
+    event.returnValue = '';
+  }
+});
+

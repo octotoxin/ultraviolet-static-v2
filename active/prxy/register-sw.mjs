@@ -2,7 +2,8 @@
 /**
  * Distributed with Ultraviolet and compatible with most configurations.
  */
-const stockSW = "/ultraviolet-static-v2/active/uv/sw.js";
+const base = location.pathname.includes('/ultraviolet-static-v2/') ? '/ultraviolet-static-v2' : '';
+const stockSW = base + "/active/uv/sw.js";
 
 /**
  * List of hostnames that are allowed to run serviceworkers on http://
@@ -25,6 +26,6 @@ export async function registerSW() {
   }
 
   await navigator.serviceWorker.register(stockSW, {
-    scope: "/ultraviolet-static-v2/active/uv/service/",
+    scope: base + "/active/uv/service/",
   });
 }

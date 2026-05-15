@@ -389,6 +389,19 @@ header #tab-list .tab-item:hover .close-icon {
     background: rgba(226, 226, 226, 0.17);
 }
 
+.menu-info {
+    margin-top: 20px;
+    padding: 10px;
+    border-top: 1px solid rgba(226, 226, 226, 0.1);
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.85rem;
+    text-align: left;
+}
+
+.menu-info p {
+    margin: 5px 0;
+}
+
 ::-webkit-scrollbar {
     width: 0;
     height: 0;

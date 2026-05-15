@@ -15,13 +15,15 @@
 //  ⠀⠀⠈⠉⠉⠉⠁⢧⢠⠟⣽⠀⢿⠀⢧⢰⡈⠀⠀⠀⠀
 //  ⠀⠀⠀⠀⠀⠀⠐⢫⠏⢸⠁⠀⠈⢳⠘⢧⣙⢦⠀⠀⠀
 
+const base = location.pathname.includes('/ultraviolet-static-v2/') ? '/ultraviolet-static-v2' : '';
+
 self.__uv$config = {
-  prefix: "/ultraviolet-static-v2/active/uv/service/",
+  prefix: base + "/active/uv/service/",
   encodeUrl: Ultraviolet.codec.xor.encode,
   decodeUrl: Ultraviolet.codec.xor.decode,
-  handler: "/ultraviolet-static-v2/active/uv/uv.handler.js",
-  client: "/ultraviolet-static-v2/active/uv/uv.client.js",
-  bundle: "/ultraviolet-static-v2/active/uv/uv.bundle.js",
-  config: "/ultraviolet-static-v2/active/uv/uv.config.js",
-  sw: "/ultraviolet-static-v2/active/uv/sw.js",
+  handler: base + "/active/uv/uv.handler.js",
+  client: base + "/active/uv/uv.client.js",
+  bundle: base + "/active/uv/uv.bundle.js",
+  config: base + "/active/uv/uv.config.js",
+  sw: base + "/active/uv/uv.sw.js",
 };

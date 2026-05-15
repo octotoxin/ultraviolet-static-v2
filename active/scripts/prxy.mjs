@@ -2,7 +2,8 @@ import { registerSW } from "../prxy/register-sw.mjs";
 import * as BareMux from "../prxy/baremux/index.mjs";
 import { getFavicon, rAlert } from "./utils.mjs";
 
-const connection = new BareMux.BareMuxConnection("../prxy/baremux/worker.js");
+const base = location.pathname.includes('/ultraviolet-static-v2/') ? '/ultraviolet-static-v2' : '';
+const connection = new BareMux.BareMuxConnection(base + "/active/prxy/baremux/worker.js");
 
 export function search(input, template) {
   try {
@@ -29,13 +30,13 @@ export async function getUV(input) {
   let url = search(input, "https://html.duckduckgo.com/html?t=h_&q=%s");
 
   let wispUrl = "wss://wisp.rhw.one/";
-  if ((await connection.getTransport()) !== "../prxy/epoxy/index.mjs") {
-    await connection.setTransport("../prxy/epoxy/index.mjs", [
+  if ((await connection.getTransport()) !== base + "/active/prxy/epoxy/index.mjs") {
+    await connection.setTransport(base + "/active/prxy/epoxy/index.mjs", [
       { wisp: wispUrl },
     ]);
   }
-  if ((await connection.getTransport()) !== "../prxy/libcurl/libcurl.mjs") {
-    await connection.setTransport("../prxy/libcurl/libcurl.mjs", [
+  if ((await connection.getTransport()) !== base + "/active/prxy/libcurl/libcurl.mjs") {
+    await connection.setTransport(base + "/active/prxy/libcurl/libcurl.mjs", [
       { wisp: wispUrl },
     ]);
   }

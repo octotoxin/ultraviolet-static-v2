@@ -48,7 +48,7 @@ Developed by technonyte0
     <script src="uv/uv.bundle.js" defer></script>
     <script src="uv/uv.config.js" defer></script>
     <script src="scripts/tabs.mjs" type="module" defer></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@100..900&family=Inter:wght@100..900&family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
     <script defer src="https://cdn.jsdelivr.net/gh/tf7software/Font-Awesome-pro-cdn@main/js/all.js"></script>
     <style>
       body {padding: 0;margin: 0;}
@@ -78,12 +78,12 @@ Developed by technonyte0
       <header>
         <div class="page-data">
           <span id="controls">
-            <button onclick="window.location.href='./'">
+            <button id="logo-button">
               <?xml version="1.0" encoding="UTF-8" standalone="no"?>
               <svg
-   width="38.454208mm"
-   height="24.726074mm"
-   viewBox="0 0 38.454208 24.726074"
+   width="60mm"
+   height="25mm"
+   viewBox="0 0 60 25"
    version="1.1"
    id="svg1"
    xmlns="http://www.w3.org/2000/svg"
@@ -91,18 +91,17 @@ Developed by technonyte0
   <defs
      id="defs1" />
   <g
-     id="layer1"
-     transform="translate(-145.0951,-136.5279)">
+     id="layer1">
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:32.9681px;font-family:'Dallas Print Shop';-inkscape-font-specification:'Dallas Print Shop';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#5a32e3;fill-opacity:1;stroke-width:2.74734"
-       x="142.33917"
-       y="161.25397"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:24px;font-family:Orbitron;-inkscape-font-specification:Orbitron;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#5a32e3;fill-opacity:1;stroke-width:2.74734"
+       x="5"
+       y="20"
        id="text2"><tspan
          id="tspan1"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Krungthep;-inkscape-font-specification:Krungthep;fill:#5a32e3;fill-opacity:1;stroke-width:2.74734"
-         x="142.33917"
-         y="161.25397">v2</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Orbitron;-inkscape-font-specification:Orbitron;fill:#5a32e3;fill-opacity:1;stroke-width:2.74734"
+         x="5"
+         y="20">v2</tspan></text>
   </g>
 </svg>
 
@@ -167,12 +166,43 @@ Developed by technonyte0
       <div class="option" id="devtools-option">Developer Tools</div>
       <div class="option" id="abc-option">Open in about:blank</div>
       <div class="option" id="git-option">GitHub</div>
+      <div class="menu-info">
+        <p>Name: Dhruva V.</p>
+        <p>GitHub: octotoxin</p>
+        <p>Email: dhruva.neurotoxin@gmail.com</p>
+        <p>Alt Email: 207318@forsythk12.org</p>
+      </div>
     </div>
     <script>
       const optionsBtn = document.getElementById("options-btn");
       const overlay = document.getElementById("menu-overlay");
       optionsBtn.addEventListener("click", () => {
         overlay.classList.toggle("active");
+      });
+
+      let logoClicks = 0;
+      let logoTimeout;
+      const logoBtn = document.getElementById("logo-button");
+      logoBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        logoClicks++;
+        clearTimeout(logoTimeout);
+        logoTimeout = setTimeout(() => {
+          if (logoClicks < 20) {
+            window.location.href = './';
+          }
+          logoClicks = 0;
+        }, 500);
+
+        if (logoClicks >= 20) {
+          const info = document.querySelector('.menu-info');
+          if (info) {
+            info.style.display = 'block';
+            if (typeof rAlert === 'function') {
+                import('./scripts/utils.mjs').then(m => m.rAlert("Developer info unlocked!"));
+            }
+          }
+        }
       });
     </script>
   </body>
