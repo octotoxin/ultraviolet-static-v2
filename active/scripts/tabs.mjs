@@ -248,7 +248,7 @@ async function addTab(link) {
   focusTab(tab);
 }
 
-addTab("duckduckgo.com");
+addTab("lite.duckduckgo.com");
 
 const urlParams = new URLSearchParams(window.location.search);
 
@@ -287,7 +287,7 @@ async function pingWisp(url) {
       const timeout = setTimeout(() => {
         socket.close();
         resolve(9999);
-      }, 3000);
+      }, 5000);
 
       socket.onopen = () => {
         const latency = Date.now() - start;
