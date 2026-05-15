@@ -272,11 +272,11 @@ window.addEventListener('beforeunload', (event) => {
 
 // Wisp Server Switcher Logic
 const wispServers = [
-  { name: "Mercury", url: "wss://wisp.mercury.cf/", reliability: "Very High", info: "Fastest for most users. Low latency and reliable." },
-  { name: "Pydust", url: "wss://wisp.pydust.cloud/", reliability: "High", info: "Less known, great fallback for speed." },
-  { name: "Delusionz", url: "wss://wisp.delusionz.me/", reliability: "High", info: "Stable and consistent uptime." },
-  { name: "Toms", url: "wss://wisp.toms.work/", reliability: "Medium", info: "Maintained by the community." },
-  { name: "RHW", url: "wss://wisp.rhw.one/", reliability: "High", info: "The classic public Wisp server." }
+  { name: "RHW (One)", url: "wss://wisp.rhw.one/", reliability: "Very High", info: "Verified working on your network. Reliable and stable." },
+  { name: "Flow (Com)", url: "wss://flow-wisp.com/", reliability: "High", info: "Uses a .com domain. Hardest for networks to block." },
+  { name: "Mercury (Workshop)", url: "wss://wisp.mercuryworkshop.me/", reliability: "High", info: "A classic community-run Wisp server." },
+  { name: "Pydust (Cloud)", url: "wss://wisp.pydust.cloud/", reliability: "Medium", info: "Good fallback if others are blocked." },
+  { name: "Almer (Me)", url: "wss://wisp.almer.me/", reliability: "High", info: "Fast, but sometimes blocked by filters." }
 ];
 
 async function pingWisp(url) {
@@ -285,8 +285,10 @@ async function pingWisp(url) {
     const socket = new WebSocket(url);
     return new Promise((resolve) => {
       const timeout = setTimeout(() => {
-        socket.close();
-        resolve(9999);
+        if (socket.readyState === WebSocket.CONNECTING) {
+          socket.close();
+          resolve(9999);
+        }
       }, 5000);
 
       socket.onopen = () => {
@@ -305,28 +307,34 @@ async function pingWisp(url) {
 }
 
 function getLatencyClass(ms) {
-  if (ms < 150) return "green";
-  if (ms < 400) return "yellow";
+  if (ms < 200) return "green";
+  if (ms < 500) return "yellow";
   return "red";
 }
 
 async function renderWispList() {
   const list = document.getElementById("wisp-list");
   if (!list) return;
-  list.innerHTML = "";
+  list.innerHTML = "<p style='color:rgba(255,255,255,0.5); font-size:0.8rem;'>Testing servers...</p>";
 
   const currentWisp = localStorage.getItem("wispUrl") || "wss://wisp.rhw.one/";
 
+  const results = [];
   for (const server of wispServers) {
     const latency = await pingWisp(server.url);
-    const latencyClass = getLatencyClass(latency);
+    results.push({ ...server, latency });
+  }
+
+  list.innerHTML = "";
+  for (const server of results) {
+    const latencyClass = getLatencyClass(server.latency);
     
     const item = document.createElement("div");
     item.className = `wisp-item ${currentWisp === server.url ? 'active' : ''}`;
     item.innerHTML = `
       <div class="wisp-name">${server.name}</div>
       <div class="wisp-status">
-        <span class="latency-text">${latency === 9999 ? 'Offline' : latency + 'ms'}</span>
+        <span class="latency-text">${server.latency === 9999 ? 'Offline' : server.latency + 'ms'}</span>
         <div class="latency-dot ${latencyClass}"></div>
       </div>
       <div class="info-popup">
@@ -347,6 +355,7 @@ async function renderWispList() {
 
 const wispInput = document.getElementById("wisp-input");
 const wispSave = document.getElementById("wisp-save");
+const wispRefresh = document.getElementById("wisp-refresh");
 
 if (wispSave) {
   wispSave.onclick = () => {
@@ -361,7 +370,15 @@ if (wispSave) {
   };
 }
 
+if (wispRefresh) {
+  wispRefresh.onclick = (e) => {
+    e.stopPropagation();
+    renderWispList();
+  };
+}
+
 // Initial render
 setTimeout(renderWispList, 500);
+
 
 
