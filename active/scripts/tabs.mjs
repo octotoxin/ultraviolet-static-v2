@@ -51,7 +51,7 @@ pageRefresh.onclick = () => {
 };
 
 newTabButton.onclick = () => {
-  addTab("duckduckgo.com");
+  addTab("lite.duckduckgo.com");
 };
 
 // Options (opt menu)
@@ -133,7 +133,7 @@ const tabItem = (tab) => {
             if (tabs.length) focusTab(tabs[tabs.length - 1]);
             else
               setTimeout(() => {
-                addTab("duckduckgo.com");
+                addTab("lite.duckduckgo.com");
               }, 100);
           }
 
@@ -279,31 +279,31 @@ const wispServers = [
   { name: "Almer (Me)", url: "wss://wisp.almer.me/", reliability: "High", info: "Fast, but sometimes blocked by filters." }
 ];
 
-async function pingWisp(url) {
-  const start = Date.now();
-  try {
-    const socket = new WebSocket(url);
-    return new Promise((resolve) => {
-      const timeout = setTimeout(() => {
-        if (socket.readyState === WebSocket.CONNECTING) {
+async function pingWisp(url, retries = 1) {
+  for (let i = 0; i <= retries; i++) {
+    const start = Date.now();
+    try {
+      const socket = new WebSocket(url);
+      const result = await new Promise((resolve) => {
+        const timeout = setTimeout(() => {
           socket.close();
           resolve(9999);
-        }
-      }, 5000);
+        }, 5000);
 
-      socket.onopen = () => {
-        const latency = Date.now() - start;
-        socket.close();
-        clearTimeout(timeout);
-        resolve(latency);
-      };
-      socket.onerror = () => {
-        resolve(9999);
-      };
-    });
-  } catch (e) {
-    return 9999;
+        socket.onopen = () => {
+          const latency = Date.now() - start;
+          socket.close();
+          clearTimeout(timeout);
+          resolve(latency);
+        };
+        socket.onerror = () => {
+          resolve(9999);
+        };
+      });
+      if (result !== 9999) return result;
+    } catch (e) {}
   }
+  return 9999;
 }
 
 function getLatencyClass(ms) {

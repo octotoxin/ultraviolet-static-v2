@@ -30,11 +30,12 @@ export async function getUV(input) {
   let url = search(input, "https://lite.duckduckgo.com/lite/?q=%s");
 
   let wispUrl = localStorage.getItem("wispUrl") || "wss://wisp.rhw.one/";
+  let lastWisp = localStorage.getItem("lastWispUrl");
   
   const currentTransport = await connection.getTransport();
-  if (localStorage.getItem("wispChanged") || !currentTransport.includes("epoxy")) {
-    localStorage.removeItem("wispChanged");
-    console.log("Setting Wisp Transport to:", wispUrl);
+  if (wispUrl !== lastWisp || !currentTransport.includes("epoxy")) {
+    localStorage.setItem("lastWispUrl", wispUrl);
+    console.log("Updating Wisp Transport to:", wispUrl);
     await connection.setTransport(base + "/active/prxy/epoxy/index.mjs", [{ wisp: wispUrl }]);
   }
 
