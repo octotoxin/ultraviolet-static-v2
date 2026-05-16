@@ -272,11 +272,11 @@ window.addEventListener('beforeunload', (event) => {
 
 // Wisp Server Switcher Logic
 const wispServers = [
-  { name: "RHW (One)", url: "wss://wisp.rhw.one/", reliability: "Very High", info: "Verified working. Reliable and stable." },
-  { name: "Flow (Com)", url: "wss://wisp.flow-wisp.com/", reliability: "High", info: "Game-optimized server. Corrected subdomain." },
-  { name: "Mercury (Workshop)", url: "wss://wisp.mercuryworkshop.me/", reliability: "High", info: "Community-run. Great for .io games." },
-  { name: "Pydust (Cloud)", url: "wss://wisp.pydust.cloud/", reliability: "Medium", info: "Fallback server for high traffic." },
-  { name: "Toms (Work)", url: "wss://wisp.toms.work/", reliability: "High", info: "Stable alternative for school networks." }
+  { name: "RHW (One)", url: "wss://wisp.rhw.one/", reliability: "Very High", info: "Verified working on your network. Best for games." },
+  { name: "Anura (One)", url: "wss://wisp.anura.one/", reliability: "High", info: "Uses the same .one domain. Likely to be unblocked." },
+  { name: "Flow (Com)", url: "wss://wisp.flow-wisp.com/", reliability: "High", info: "Optimized for games. Might be blocked by some filters." },
+  { name: "Mercury (Workshop)", url: "wss://wisp.mercuryworkshop.me/", reliability: "High", info: "Community-run. Great fallback if available." },
+  { name: "Toms (Work)", url: "wss://wisp.toms.work/", reliability: "High", info: "Stable alternative, often blocked on school networks." }
 ];
 
 async function pingWisp(url, retries = 1) {
@@ -343,9 +343,22 @@ async function renderWispList() {
       </div>
     `;
 
-    item.onclick = () => {
+    item.onclick = async () => {
+      // Pre-test before switching
+      const listContainer = document.getElementById("wisp-list");
+      listContainer.style.opacity = "0.5";
+      listContainer.style.pointerEvents = "none";
+      
+      const latency = await pingWisp(server.url);
+      if (latency === 9999) {
+        alert("This server is currently blocked by your network. Please try another one!");
+        listContainer.style.opacity = "1";
+        listContainer.style.pointerEvents = "all";
+        return;
+      }
+
       localStorage.setItem("wispUrl", server.url);
-      localStorage.setItem("wispChanged", "true");
+      localStorage.setItem("lastWispUrl", server.url);
       window.location.reload();
     };
 

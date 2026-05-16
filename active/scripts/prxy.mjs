@@ -29,6 +29,18 @@ export async function getUV(input) {
 
   let url = search(input, "https://lite.duckduckgo.com/lite/?q=%s");
 
+  // Storage Resilience Check
+  try {
+    localStorage.setItem('test', 'test');
+    localStorage.removeItem('test');
+  } catch (e) {
+    console.warn("Storage blocked by Tracking Prevention. Using memory-only mode.");
+    window.localStorageBackup = {};
+    const originalGet = localStorage.getItem;
+    localStorage.getItem = (key) => window.localStorageBackup[key] || originalGet.call(localStorage, key);
+    localStorage.setItem = (key, val) => { window.localStorageBackup[key] = val; };
+  }
+
   let wispUrl = localStorage.getItem("wispUrl") || "wss://wisp.rhw.one/";
   let lastWisp = localStorage.getItem("lastWispUrl");
   
