@@ -22,21 +22,22 @@ const barePool = [
 ];
 
 async function checkSocket(url) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     try {
       const ws = new WebSocket(url);
-      const timer = setTimeout(() => { ws.close(); resolve(false); }, 2500);
-      ws.onopen = () => { clearTimeout(timer); ws.close(); resolve(true); };
-      ws.onerror = () => { clearTimeout(timer); resolve(false); };
-    } catch { resolve(false); }
+      const timer = setTimeout(() => { ws.close(); reject(); }, 1500); // Faster timeout
+      ws.onopen = () => { clearTimeout(timer); ws.close(); resolve(url); };
+      ws.onerror = () => { clearTimeout(timer); reject(); };
+    } catch { reject(); }
   });
 }
 
 async function checkFetch(url) {
   try {
     const res = await fetch(url, { method: "OPTIONS" });
-    return res.ok || res.status === 404 || res.status === 400;
-  } catch { return false; }
+    if (res.ok || res.status === 404 || res.status === 400) return url;
+    throw new Error();
+  } catch { throw new Error(); }
 }
 
 export function search(input, template) {
@@ -55,7 +56,6 @@ export function search(input, template) {
 export async function getUV(input) {
   try {
     await registerSW();
-    rAlert("SW ✓");
   } catch (err) {
     rAlert(`SW failed to register.<br>${err.toString()}`);
     throw err;
@@ -63,7 +63,6 @@ export async function getUV(input) {
 
   let url = search(input, "https://lite.duckduckgo.com/lite/?q=%s");
 
-  // Storage Resilience Check
   try {
     localStorage.setItem('test', 'test');
     localStorage.removeItem('test');
@@ -76,33 +75,42 @@ export async function getUV(input) {
 
   let transportMode = localStorage.getItem("transportMode") || "epoxy";
   let currentTransport = await connection.getTransport();
-  let targetUrl = "";
 
   if (transportMode === "libcurl") {
     let savedBare = localStorage.getItem("bareUrl") || "https://tomp.app/";
-    if (!currentTransport.includes("libcurl") || !(await checkFetch(savedBare))) {
-      for (const bare of barePool) {
-        if (await checkFetch(bare)) {
-          savedBare = bare;
-          localStorage.setItem("bareUrl", bare);
-          break;
-        }
+    // Test current bare, if fails, race all others in parallel
+    try {
+      await checkFetch(savedBare);
+    } catch {
+      try {
+        console.log("[Smart Connect] Testing all Bare servers instantly...");
+        savedBare = await Promise.any(barePool.map(checkFetch));
+        localStorage.setItem("bareUrl", savedBare);
+      } catch {
+        savedBare = barePool[0]; // Fallback to default if all blocked
       }
-      console.log("[Smart Connect] Setting Stealth Transport (Libcurl) to:", savedBare);
+    }
+    
+    if (!currentTransport.includes("libcurl") || currentTransport !== savedBare) {
+      console.log("[Smart Connect] Stealth Transport Ready:", savedBare);
       await connection.setTransport(base + "/active/prxy/libcurl/index.mjs", [{ bare: savedBare }]);
     }
   } else {
     let savedWisp = localStorage.getItem("wispUrl") || "wss://wisp.rhw.one/";
-    if (!currentTransport.includes("epoxy") || !(await checkSocket(savedWisp))) {
-      console.log(`[Smart Connect] Wisp ${savedWisp} is unresponsive. Finding a working server...`);
-      for (const wisp of wispPool) {
-        if (await checkSocket(wisp)) {
-          savedWisp = wisp;
-          localStorage.setItem("wispUrl", wisp);
-          break;
-        }
+    try {
+      await checkSocket(savedWisp);
+    } catch {
+      try {
+        console.log("[Smart Connect] Testing all Wisp servers instantly...");
+        savedWisp = await Promise.any(wispPool.map(checkSocket));
+        localStorage.setItem("wispUrl", savedWisp);
+      } catch {
+        savedWisp = wispPool[0];
       }
-      console.log("[Smart Connect] Setting Wisp Transport (Epoxy) to:", savedWisp);
+    }
+
+    if (!currentTransport.includes("epoxy") || currentTransport !== savedWisp) {
+      console.log("[Smart Connect] Wisp Transport Ready:", savedWisp);
       await connection.setTransport(base + "/active/prxy/epoxy/index.mjs", [{ wisp: savedWisp }]);
     }
   }
