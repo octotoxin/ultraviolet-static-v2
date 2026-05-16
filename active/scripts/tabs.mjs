@@ -378,6 +378,26 @@ async function renderWispList() {
 const wispInput = document.getElementById("wisp-input");
 const wispSave = document.getElementById("wisp-save");
 const wispRefresh = document.getElementById("wisp-refresh");
+const modeEpoxy = document.getElementById("mode-epoxy");
+const modeLibcurl = document.getElementById("mode-libcurl");
+
+if (modeEpoxy && modeLibcurl) {
+  const currentMode = localStorage.getItem("transportMode") || "epoxy";
+  if (currentMode === "libcurl") {
+    modeLibcurl.classList.add("active");
+    modeEpoxy.classList.remove("active");
+  }
+
+  modeEpoxy.onclick = () => {
+    localStorage.setItem("transportMode", "epoxy");
+    window.location.reload();
+  };
+
+  modeLibcurl.onclick = () => {
+    localStorage.setItem("transportMode", "libcurl");
+    window.location.reload();
+  };
+}
 
 if (wispSave) {
   wispSave.onclick = () => {

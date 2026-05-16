@@ -161,6 +161,30 @@
   line-height: 1.4;
 }
 
+.mode-btn {
+  flex: 1;
+  background: rgba(226, 226, 226, 0.1);
+  border: 1px solid rgba(226, 226, 226, 0.1);
+  border-radius: 6px;
+  color: #fff;
+  padding: 8px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: 0.15s ease;
+  font-family: 'Google Sans Flex', sans-serif;
+  font-weight: 500;
+}
+
+.mode-btn:hover {
+  background: rgba(226, 226, 226, 0.15);
+}
+
+.mode-btn.active {
+  background: #5a32e3;
+  border-color: #5a32e3;
+  font-weight: 700;
+}
+
 .info-popup .reliability {
   color: #00ff88;
   font-weight: 600;

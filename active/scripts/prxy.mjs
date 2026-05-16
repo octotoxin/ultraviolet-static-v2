@@ -42,13 +42,24 @@ export async function getUV(input) {
   }
 
   let wispUrl = localStorage.getItem("wispUrl") || "wss://wisp.rhw.one/";
+  let transportMode = localStorage.getItem("transportMode") || "epoxy";
   let lastWisp = localStorage.getItem("lastWispUrl");
+  let lastMode = localStorage.getItem("lastTransportMode");
   
   const currentTransport = await connection.getTransport();
-  if (wispUrl !== lastWisp || !currentTransport.includes("epoxy")) {
+  
+  if (wispUrl !== lastWisp || transportMode !== lastMode || !currentTransport.includes(transportMode)) {
     localStorage.setItem("lastWispUrl", wispUrl);
-    console.log("Updating Wisp Transport to:", wispUrl);
-    await connection.setTransport(base + "/active/prxy/epoxy/index.mjs", [{ wisp: wispUrl }]);
+    localStorage.setItem("lastTransportMode", transportMode);
+    
+    if (transportMode === "libcurl") {
+      const bareUrl = wispUrl.replace("wss://", "https://").replace("ws://", "http://");
+      console.log("Setting Stealth Transport (Libcurl) to:", bareUrl);
+      await connection.setTransport(base + "/active/prxy/libcurl/index.mjs", [{ bare: bareUrl }]);
+    } else {
+      console.log("Setting Wisp Transport (Epoxy) to:", wispUrl);
+      await connection.setTransport(base + "/active/prxy/epoxy/index.mjs", [{ wisp: wispUrl }]);
+    }
   }
 
 
