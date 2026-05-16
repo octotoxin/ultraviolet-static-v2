@@ -80,7 +80,7 @@ export async function getUV(input) {
     let savedBare = "https://tomp.app/"; // Hardcoded fallback Bare server
     if (!currentTransport.includes("libcurl")) {
       console.log("[Smart Connect] Stealth Transport Ready:", savedBare);
-      await connection.setTransport(base + "/active/prxy/libcurl/libcurl.mjs", [{ bare: savedBare }]);
+      await connection.setTransport(base + "/active/prxy/libcurl/libcurl.mjs", [savedBare]);
     }
   } else {
     let savedWisp = localStorage.getItem("wispUrl") || "wss://wisp.rhw.one/";
