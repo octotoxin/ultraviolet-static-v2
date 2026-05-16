@@ -195,6 +195,32 @@ Developed by technonyte0
         overlay.classList.toggle("active");
       });
 
+      // Developer Tools (Eruda)
+      document.getElementById("devtools-option").onclick = () => {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/eruda';
+        document.body.appendChild(script);
+        script.onload = () => {
+          eruda.init();
+          eruda.show();
+          overlay.classList.remove("active");
+        };
+      };
+
+      // Fullscreen / Game Mode
+      const fullscreenOption = document.createElement("div");
+      fullscreenOption.className = "option";
+      fullscreenOption.innerText = "Fullscreen (Game Mode)";
+      fullscreenOption.onclick = () => {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen();
+        } else {
+          document.exitFullscreen();
+        }
+        overlay.classList.remove("active");
+      };
+      overlay.insertBefore(fullscreenOption, document.getElementById("abc-option"));
+
       let logoClicks = 0;
       let logoTimeout;
       const logoBtn = document.getElementById("logo-button");

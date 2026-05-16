@@ -378,7 +378,30 @@ if (wispRefresh) {
 }
 
 // Initial render
-setTimeout(renderWispList, 500);
+setTimeout(async () => {
+  await renderWispList();
+  
+  // Auto-Picker: If no server is selected, or it's the first visit, pick the fastest
+  if (!localStorage.getItem("wispUrl")) {
+    const list = document.getElementById("wisp-list");
+    const items = Array.from(list.querySelectorAll(".wisp-item"));
+    let best = null;
+    let minLatency = 9999;
+
+    items.forEach(item => {
+      const latText = item.querySelector(".latency-text").innerText;
+      const latency = parseInt(latText);
+      if (!isNaN(latency) && latency < minLatency) {
+        minLatency = latency;
+        best = item;
+      }
+    });
+
+    if (best) {
+      best.click();
+    }
+  }
+}, 500);
 
 
 
