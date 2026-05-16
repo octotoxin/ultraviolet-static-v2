@@ -272,11 +272,11 @@ window.addEventListener('beforeunload', (event) => {
 
 // Wisp Server Switcher Logic
 const wispServers = [
-  { name: "RHW (One)", url: "wss://wisp.rhw.one/", reliability: "Very High", info: "Verified working on your network. Reliable and stable." },
-  { name: "Flow (Com)", url: "wss://flow-wisp.com/", reliability: "High", info: "Uses a .com domain. Hardest for networks to block." },
-  { name: "Mercury (Workshop)", url: "wss://wisp.mercuryworkshop.me/", reliability: "High", info: "A classic community-run Wisp server." },
-  { name: "Pydust (Cloud)", url: "wss://wisp.pydust.cloud/", reliability: "Medium", info: "Good fallback if others are blocked." },
-  { name: "Almer (Me)", url: "wss://wisp.almer.me/", reliability: "High", info: "Fast, but sometimes blocked by filters." }
+  { name: "RHW (One)", url: "wss://wisp.rhw.one/", reliability: "Very High", info: "Verified working. Reliable and stable." },
+  { name: "Flow (Com)", url: "wss://wisp.flow-wisp.com/", reliability: "High", info: "Game-optimized server. Corrected subdomain." },
+  { name: "Mercury (Workshop)", url: "wss://wisp.mercuryworkshop.me/", reliability: "High", info: "Community-run. Great for .io games." },
+  { name: "Pydust (Cloud)", url: "wss://wisp.pydust.cloud/", reliability: "Medium", info: "Fallback server for high traffic." },
+  { name: "Toms (Work)", url: "wss://wisp.toms.work/", reliability: "High", info: "Stable alternative for school networks." }
 ];
 
 async function pingWisp(url, retries = 1) {
