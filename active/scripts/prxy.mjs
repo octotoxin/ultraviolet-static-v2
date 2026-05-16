@@ -77,23 +77,10 @@ export async function getUV(input) {
   let currentTransport = await connection.getTransport();
 
   if (transportMode === "libcurl") {
-    let savedBare = localStorage.getItem("bareUrl") || "https://tomp.app/";
-    // Test current bare, if fails, race all others in parallel
-    try {
-      await checkFetch(savedBare);
-    } catch {
-      try {
-        console.log("[Smart Connect] Testing all Bare servers instantly...");
-        savedBare = await Promise.any(barePool.map(checkFetch));
-        localStorage.setItem("bareUrl", savedBare);
-      } catch {
-        savedBare = barePool[0]; // Fallback to default if all blocked
-      }
-    }
-    
-    if (!currentTransport.includes("libcurl") || currentTransport !== savedBare) {
+    let savedBare = "https://tomp.app/"; // Hardcoded fallback Bare server
+    if (!currentTransport.includes("libcurl")) {
       console.log("[Smart Connect] Stealth Transport Ready:", savedBare);
-      await connection.setTransport(base + "/active/prxy/libcurl/index.mjs", [{ bare: savedBare }]);
+      await connection.setTransport(base + "/active/prxy/libcurl/libcurl.mjs", [{ bare: savedBare }]);
     }
   } else {
     let savedWisp = localStorage.getItem("wispUrl") || "wss://wisp.rhw.one/";
