@@ -306,10 +306,19 @@ async function pingWisp(url, retries = 1) {
   return 9999;
 }
 
-function getLatencyClass(ms) {
-  if (ms < 200) return "green";
-  if (ms < 500) return "yellow";
-  return "red";
+function getLatencyIcon(ms) {
+  if (ms === 9999) return "wifi_off";
+  if (ms < 150) return "signal_wifi_4_bar";
+  if (ms < 300) return "network_wifi_3_bar";
+  if (ms < 500) return "network_wifi_2_bar";
+  return "network_wifi_1_bar";
+}
+
+function getLatencyColor(ms) {
+  if (ms === 9999) return "#ff4444";
+  if (ms < 200) return "#00ff88";
+  if (ms < 500) return "#ffbb00";
+  return "#ff4444";
 }
 
 async function renderWispList() {
@@ -325,9 +334,9 @@ async function renderWispList() {
     results.push({ ...server, latency });
   }
 
-  list.innerHTML = "";
   for (const server of results) {
-    const latencyClass = getLatencyClass(server.latency);
+    const icon = getLatencyIcon(server.latency);
+    const color = getLatencyColor(server.latency);
     
     const item = document.createElement("div");
     item.className = `wisp-item ${currentWisp === server.url ? 'active' : ''}`;
@@ -335,7 +344,7 @@ async function renderWispList() {
       <div class="wisp-name">${server.name}</div>
       <div class="wisp-status">
         <span class="latency-text">${server.latency === 9999 ? 'Offline' : server.latency + 'ms'}</span>
-        <div class="latency-dot ${latencyClass}"></div>
+        <span class="material-symbols-rounded" style="color: ${color}; font-size: 1.2rem;">${icon}</span>
       </div>
       <div class="info-popup">
         <p>${server.info}</p>
