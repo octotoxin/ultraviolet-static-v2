@@ -12,6 +12,7 @@
   padding: 20px;
   box-sizing: border-box;
   font-family: 'Google Sans Flex', sans-serif;
+  overflow-y: auto;
 }#menu-overlay.active{transform:translateX(0)}.option{color:#fff;margin-bottom:5px;cursor:pointer;padding:.5rem;background:rgba(226,226,226,.15);transition:.15s ease;border-radius:6px;width:95%}.option:hover{background:rgba(226,226,226,.17)}.menu-info{display:none;margin-top:20px;padding:10px;border-top:1px solid rgba(226,226,226,.1);color:rgba(255,255,255,.6);font-size:.85rem;text-align:left}.menu-info p{margin:5px 0}::-webkit-scrollbar{width:0;height:0}
 
 /* Wisp Switcher Styles */

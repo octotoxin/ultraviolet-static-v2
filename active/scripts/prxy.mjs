@@ -53,7 +53,9 @@ export async function getUV(input) {
     localStorage.setItem("lastTransportMode", transportMode);
     
     if (transportMode === "libcurl") {
-      const bareUrl = wispUrl.replace("wss://", "https://").replace("ws://", "http://");
+      // Wisp servers often don't have Bare enabled on the same URL.
+      // We use a dedicated, public Bare server for Libcurl mode.
+      const bareUrl = "https://tomp.app/";
       console.log("Setting Stealth Transport (Libcurl) to:", bareUrl);
       await connection.setTransport(base + "/active/prxy/libcurl/index.mjs", [{ bare: bareUrl }]);
     } else {
